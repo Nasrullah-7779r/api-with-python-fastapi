@@ -3,7 +3,7 @@ from pymongo import MongoClient
 
 app = FastAPI()
 
-client = MongoClient("mongodb+srv://Nasrullah:pass1234@mycluster.9g8gat6.mongodb.net/")
+client = MongoClient("mongodb+srv://@mycluster.9g8gat6.mongodb.net/")
 
 db = client["testDB"]
 
