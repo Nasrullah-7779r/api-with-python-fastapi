@@ -15,8 +15,9 @@ async def get_note(title: str):
     note = collection.find_one({"title": title})
     if note is None:
         return {"message": "Note not found"}
-    note["_id"] = str(note["_id"])
-    return {"message": "Note retrieved successfully", "note": note}
+    else:
+        note["_id"] = str(note["_id"])
+        return {"message": "Note retrieved successfully", "note": note}
 
 
 # class Notes(BaseModel):
