@@ -68,4 +68,4 @@ async def delete_note(note: Note):
         return {"message": "Note deleted successfully", "deleted_note_title": note.title,
                 "deleted_note_desc": note.description}
 
-    return {"message": "Note deletion is failed", "Note": note_to_be_deleted}
+    return {"message": "Note deletion is fail", "Note": note_to_be_deleted}
