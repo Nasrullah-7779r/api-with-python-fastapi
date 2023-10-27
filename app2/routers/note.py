@@ -1,16 +1,21 @@
+from typing import Optional
+
 from fastapi import status, HTTPException, Depends, APIRouter
 from app2.DB import get_db
 from sqlalchemy.orm import Session
-from app2 import schemas, models
+from app2 import schemas, models, oauth2
 
 router = APIRouter(tags=["Note"])
 
 
 # Note requests
-@router.post("/create_note", status_code=status.HTTP_201_CREATED)
-async def create_note(note: schemas.NoteCreate, db: Session = Depends(get_db)):
+@router.post("/create_note", status_code=status.HTTP_201_CREATED, )
+async def create_note(note: schemas.NoteCreate, db: Session = Depends(get_db),
+                      current_user: int = Depends(oauth2.get_current_user)):
     # new_note = models.Note(id=note.id, title=note.title, description=note.description)
-    new_note = models.Note(**note.model_dump())  # convert the note into a dict and unpack
+    # print(f"id is {user_id}")
+    print(current_user.id)
+    new_note = models.Note(user_id=current_user.id, **note.model_dump())  # convert the note into a dict and unpack
     db.add(new_note)
     db.commit()
     db.refresh(new_note)  # returns newly created note like returning in SQL
@@ -18,42 +23,71 @@ async def create_note(note: schemas.NoteCreate, db: Session = Depends(get_db)):
     return {"New Note": new_note}
 
 
-@router.get("/all_notes")  # get all notes
-def get_notes(db: Session = Depends(get_db)):
-    data = db.query(models.Note).all()
+@router.get("/all_notes", response_model=list[schemas.NoteOut])  # get all notes
+def get_all_notes(db: Session = Depends(get_db), skip: int = 0, limit: int = 10, search: Optional[str] = ""):
+    data = db.query(models.Note).filter(models.Note.title.contains(search)).limit(limit).offset(skip).all()
+    print(search)
+    if data is None:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Not found any note")
 
     return data
 
 
-@router.get("/all_notes/{note_id}")  # get single note
-def get_note(note_id: int, db: Session = Depends(get_db)):
+@router.get("/one_note/{note_id}")  # get single note
+def get_one_note(note_id: int, db: Session = Depends(get_db), current_user: int = Depends(oauth2.get_current_user)):
     #    note = db.query(models.Note).get({"id": note_id})
     note = db.query(models.Note).filter(models.Note.id == note_id).first()
 
-    if not note:
+    if note is None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Note with note no {note_id} was not found")
+
+    if note.user_id != current_user.id:
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail=f"Not authorized for requested action")
 
     return note
 
 
 # update the existing note
 @router.put("/update_note/{note_id}", status_code=status.HTTP_202_ACCEPTED)
-def update_note(note_id: int, updated_note: schemas.NoteCreate, db: Session = Depends(get_db)):
+def update_note(note_id: int, updated_note: schemas.NoteCreate, db: Session = Depends(get_db),
+                current_user: int = Depends(oauth2.get_current_user)):
     update_q = db.query(models.Note).filter(models.Note.id == note_id)
-    update_response = update_q.update(updated_note.model_dump(), False)  # convert updated_note into a dict & pass
+    note = update_q.first()
 
-    if update_response == 0:
+    if note is None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Note with note no {note_id} was not found")
+
+    if note.user_id != current_user.id:
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Not authorized for requested action")
+
+    update_q.update(updated_note.model_dump(), False)  # convert updated_note into a dict & pass
 
     db.commit()
     return {"Updated Note": update_q.first()}
 
 
 @router.delete("/delete_note/{note_id}", status_code=status.HTTP_204_NO_CONTENT)
-def delete_note(note_id: int, db: Session = Depends(get_db)):
-    del_response = db.query(models.Note).filter(models.Note.id == note_id).delete(synchronize_session=False)
+def delete_note(note_id: int, db: Session = Depends(get_db),
+                current_user: int = Depends(oauth2.get_current_user)):
+    del_response = db.query(models.Note).filter(models.Note.id == note_id)
+    note = del_response.first()
+
+    if note is None:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Note with note no {note_id} was not found")
+
+    if note.user_id != current_user.id:
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Not authorized for requested action")
+
+    del_response.delete(synchronize_session=False)
+    db.commit()
+
+
+@router.delete("/delete_all_notes", status_code=status.HTTP_204_NO_CONTENT)
+def delete_note(db: Session = Depends(get_db),
+                current_user: int = Depends(oauth2.get_current_user)):
+    del_response = db.query(models.Note).delete(synchronize_session=False)
 
     db.commit()
-    print(f"del response is {del_response}")
+
     if del_response == 0:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Note with note no {note_id} was not found")
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"The Notes table might be empty")

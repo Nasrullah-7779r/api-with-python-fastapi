@@ -9,28 +9,28 @@ class NoteCreate(BaseModel):
     description: str
 
 
-class NoteOut(BaseModel):
-    id: int
-    title: str
-    description: str
-
-
 class UserCreate(BaseModel):
     name: str
     email: EmailStr
     password: str
-    # class Config:
-    #     orm_mode = True
 
 
 class UserOut(BaseModel):
     id: int
     name: str
     email: EmailStr
-    created_at: datetime
+    created_at: Optional[datetime]
 
     # class Config:
     #     orm_mode = True
+
+
+class NoteOut(BaseModel):
+    id: int
+    title: str
+    description: str
+    user_id: int
+    user: UserOut  # (exclude=['user.created_at'])  # so  while getting a note user could see its user related info
 
 
 class UserLogin(BaseModel):
@@ -44,5 +44,4 @@ class Token(BaseModel):
 
 
 class TokenData(BaseModel):
-    id: Optional[str] = None
-
+    id: Optional[int] = None
