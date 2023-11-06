@@ -1,7 +1,7 @@
 from fastapi import FastAPI, status, HTTPException
 from pydantic import BaseModel
 
-from app2.DB import DB
+from DB_with_SQL import DB
 
 curser, conn = DB.start_db()
 if not curser:

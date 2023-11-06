@@ -1,8 +1,13 @@
-import unittest
+from fastapi.testclient import TestClient
+from app2.main import app
+from fastapi import status
 
-class MyTestCase(unittest.TestCase):
-    def test_something(self):
-        self.assertEqual(True, False)  # add assertion here
+client = TestClient(app)
 
-if __name__ == '__main__':
-    unittest.main()
+
+def test_read_main():
+    response = client.get('/')
+
+    assert response.json().get("message") == "Hello FastAPI"
+    print(response.json().get("message"))
+    assert response.status_code == status.HTTP_200_OK

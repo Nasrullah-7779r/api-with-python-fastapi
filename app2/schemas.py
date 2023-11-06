@@ -1,7 +1,7 @@
 from datetime import datetime
 from typing import Optional
 
-from pydantic import BaseModel, EmailStr
+from pydantic import BaseModel, EmailStr, conint
 
 
 class NoteCreate(BaseModel):
@@ -21,16 +21,13 @@ class UserOut(BaseModel):
     email: EmailStr
     created_at: Optional[datetime]
 
-    # class Config:
-    #     orm_mode = True
-
 
 class NoteOut(BaseModel):
     id: int
     title: str
     description: str
     user_id: int
-    user: UserOut  # (exclude=['user.created_at'])  # so  while getting a note user could see its user related info
+    user: UserOut
 
 
 class UserLogin(BaseModel):
@@ -45,3 +42,13 @@ class Token(BaseModel):
 
 class TokenData(BaseModel):
     id: Optional[int] = None
+
+
+class Like(BaseModel):
+    note_id: int
+    is_like: conint(ge=0, le=1)
+
+
+class NoteOutWithLikes(BaseModel):
+    note: NoteOut
+    no_of_like: int
