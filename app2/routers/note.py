@@ -15,7 +15,7 @@ async def create_note(note: schemas.NoteCreate, db: Session = Depends(get_db),
     # new_note = models.Note(id=note.id, title=note.title, description=note.description)
     # print(f"id is {user_id}")
     print(current_user.id)
-    new_note = models.Note(user_id=current_user.id, **note.model_dump())  # convert the note into a dict and unpack
+    new_note = models.Note(owner_id=current_user.id, **note.model_dump())  # convert the note into a dict and unpack
     db.add(new_note)
     db.commit()
     db.refresh(new_note)  # returns newly created note like returning in SQL

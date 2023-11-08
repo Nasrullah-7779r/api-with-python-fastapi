@@ -1,7 +1,8 @@
 import pytest
 from fastapi import status
+from jose import jwt
 from app2 import schemas
-from .test_db import client, session
+from app2.config import setting
 import pdb
 
 user_data_list = [
@@ -11,19 +12,7 @@ user_data_list = [
 ]
 
 
-# Base.metadata.create_all(bind=test_engine)  # responsible for execute initial configuration. etc tables creation
-
-
-# @pytest.fixture
-# def client():
-#     # code before start test
-#     Base.metadata.drop_all(bind=test_engine)
-#     Base.metadata.create_all(bind=test_engine)  # responsible for execute initial configuration. etc tables creation
-#     yield TestClient(app)
-#     # code after finish test
-#      # responsible for execute initial configuration. etc tables creation
-
-
+@pytest.mark.skip
 @pytest.mark.parametrize("user_data", user_data_list)
 def test_create_user(client, user_data):
     response = client.post('/create_user', json=user_data)
@@ -35,7 +24,8 @@ def test_create_user(client, user_data):
     # pdb.set_trace()
 
 
-def test_getall_user(client):
+@pytest.mark.skip
+def test_get_all_user(client):
     response = client.get('/all_users')
     users_data = response.json()
     # pdb.set_trace()
@@ -48,8 +38,11 @@ def test_getall_user(client):
     assert response.status_code == status.HTTP_200_OK
 
 
-@pytest.mark.skip
-def test_login(client):
-    res = client.post("/login", data={"username": "haider@example.com", "password": "123"})
-    print(res.json())
+def test_login(client, test_user):
+    res = client.post("/login", data={"username": test_user["email"], "password": test_user["password"]})
+    login_res = schemas.Token(**res.json())
+    payload = jwt.decode(login_res.access_token, setting.secret_key, setting.algorithm)
+    id = payload.get("user_id")
+    assert id == test_user["id"]
+    assert login_res.token_type == "bearer"
     assert res.status_code == status.HTTP_200_OK

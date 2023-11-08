@@ -26,7 +26,7 @@ class NoteOut(BaseModel):
     id: int
     title: str
     description: str
-    user_id: int
+    owner_id: int
     user: UserOut
 
 

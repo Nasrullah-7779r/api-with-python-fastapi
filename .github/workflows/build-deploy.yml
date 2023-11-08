@@ -9,10 +9,10 @@ jobs:
       - name: pulling git repo
         uses: actions/checkout@v4
       - name: print something on console
-        run:  echo "Hello linux"
+        run:  echo "Hello linux 2nd timeasdasdasd"
 #  push:
 #    branches:
 #      - "dev"
 #  pull_request:
 #    branches:
-#      - "test_branch"
+#      - "test_branch"asasdadadasd
