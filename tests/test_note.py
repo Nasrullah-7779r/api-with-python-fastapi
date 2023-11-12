@@ -37,7 +37,7 @@ def test_get_one_note_not_exist(authorized_client, test_notes):
 
 @pytest.mark.skip
 def test_get_one_note(authorized_client, test_notes):
-    pdb.set_trace()
+    # pdb.set_trace()
     res = authorized_client.get(f"/one_note/{test_notes[0].id}")
 
     print(f"res is {res.json()}")
@@ -55,7 +55,7 @@ def test_get_one_note(authorized_client, test_notes):
 def test_create_note(authorized_client, test_user, title, description):
     res = authorized_client.post("/create_note",
                                  json={"title": title, "description": description})
-    pdb.set_trace()
+    # pdb.set_trace()
     created_note = {"title": res.json()["New Note"]["title"], "description": res.json()["New Note"]["description"]}
 
     print(res.json())
