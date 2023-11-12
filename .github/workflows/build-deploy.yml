@@ -16,15 +16,18 @@ jobs:
       ALGORITHM: ${{secrets.ALGORITHM}}
       ACCESS_TOKEN_EXPIRE_MINUTES: ${{secrets.ACCESS_TOKEN_EXPIRE_MINUTES}}
 
+    services:
+      postgres:
+        image: postgres
+        env:
+          POSTGRES_PASSWORD: ${{secrets.DATABASE_PASSWORD}}
+          POSTGRES_DB: ${{secrets.DATABASE_NAME}}
 #    services:
 #      postgres:
 #        image:
     runs-on: ubuntu-latest
     steps:
-      - name: installing postgres
-        uses: harmon758/postgresql-action@v1
-        with:
-           postgresql version: '11'
+
       - name: pulling git repo
         uses: actions/checkout@v4
       - name: print something on console
