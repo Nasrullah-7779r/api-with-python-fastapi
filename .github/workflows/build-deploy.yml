@@ -15,15 +15,22 @@ jobs:
         uses: actions/setup-python@v4
         with:
           python-version: "3.9"
-      - name: print working directory
-        run: pwd
       - name: update pip
         run: python -m pip install --upgrade pip
-      - name: List directory contents
-        run: ls -la
+
       - name: install dependencies
         run: pip install -r requirements.txt
 
+      - name: Run the app
+        run: uvicorn app2.main:app
+
+      - name: Capture response
+        id: app_get_response
+        run: response=$(curl -s http://127.0.0.1:8000/) 
+          echo "::set-output name=response::$response"
+
+      - name: Print GET response
+        run: echo "Response from Get request:${{steps.app_get_response.outputs.response}}"
 #  push:
 #    branches:
 #      - "dev"
