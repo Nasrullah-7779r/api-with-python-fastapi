@@ -22,7 +22,10 @@ jobs:
         run: pip install -r requirements.txt
 
       - name: Run the app
-        run: uvicorn app2.main:app
+        run: | 
+            pip install uvicorn
+            uvicorn app2.main:app
+          
 
       - name: Capture response
         id: app_get_response
