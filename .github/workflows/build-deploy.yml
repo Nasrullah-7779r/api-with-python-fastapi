@@ -14,17 +14,18 @@ jobs:
       - name: install python
         uses: actions/setup-python@v4
         with:
-          python-version: "3.11"
+          python-version: "3.9"
       - name: update pip
         run: python -m pip install --upgrade pip
 
       - name: install dependencies
         run: pip install -r requirements.txt
 
+      - name: Activate virtual environment
+        run: source venv/bin/activate
+
       - name: Run the app
-        run: | 
-            pip install uvicorn
-            uvicorn app2.main:app
+        run:  uvicorn app2.main:app
           
 
       - name: Capture response
