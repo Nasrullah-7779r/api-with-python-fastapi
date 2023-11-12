@@ -21,7 +21,7 @@ jobs:
         image: postgres
         env:
           POSTGRES_PASSWORD: ${{secrets.DATABASE_PASSWORD}}
-          POSTGRES_DB: ${{secrets.DATABASE_NAME}}
+          POSTGRES_DB: ${{secrets.TEST_DATABASE_NAME}}
 #    services:
 #      postgres:
 #        image:
@@ -42,17 +42,23 @@ jobs:
       - name: install dependencies
         run: pip install -r requirements.txt
 
-      - name: Run the app
-        run:  uvicorn app2.main:app
-          
+      - name: Test the app
+        run:  |
+          pip install pytest
+          pytest
 
-      - name: Capture response
-        id: app_get_response
-        run: response=$(curl -s http://127.0.0.1:8000/) 
-          echo "::set-output name=response::$response"
 
-      - name: Print GET response
-        run: echo "Response from Get request:${{steps.app_get_response.outputs.response}}"
+#      - name: Run the app
+#        run:  uvicorn app2.main:app
+#
+#
+#      - name: Capture response
+#        id: app_get_response
+#        run: response=$(curl -s http://127.0.0.1:8000/)
+#          echo "::set-output name=response::$response"
+#
+#      - name: Print GET response
+#        run: echo "Response from Get request:${{steps.app_get_response.outputs.response}}"
 #  push:
 #    branches:
 #      - "dev"
