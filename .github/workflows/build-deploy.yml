@@ -57,7 +57,7 @@ jobs:
           pytest
 
       - name: Run the app
-        run:  uvicorn app2.main:app
+        run:  uvicorn app2.main:app &
 #
 #
 #      - name: Capture response
