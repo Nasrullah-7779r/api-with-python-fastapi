@@ -71,7 +71,7 @@ jobs:
         id: app_get_response
         run: | 
           response=$(curl -s http://127.0.0.1:8000/)
-          echo "name=response">>$GITHUB_STATE
+          echo "name=response">>$GITHUB_ENV
 
       - name: Print GET response
         run: echo "Response from Get request is $name"
