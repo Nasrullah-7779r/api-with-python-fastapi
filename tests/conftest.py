@@ -11,12 +11,12 @@ from app2.models import Note
 from app2.config import setting
 import pdb
 
-SQLALCHEMY_TestDB_URL = 'postgresql://postgres:pass1234@localhost/FastAPI_testdb'
+# SQLALCHEMY_TestDB_URL = 'postgresql://postgres:pass1234@localhost/FastAPI_testdb'
 
 # SQLALCHEMY_DB_URL = (f'postgresql://{setting.database_username}:{setting.database_password}@'
 #                      f'{setting.database_hostname}/{setting.database_name}')
-# SQLALCHEMY_TestDB_URL = (f'postgresql://postgres:{setting.database_password}@'
-#                          f'{setting.database_hostname}/FastAPI_testdb')
+SQLALCHEMY_TestDB_URL = (f'postgresql://postgres:{setting.database_password}@'
+                         f'{setting.database_hostname}/FastAPI_testdb')
 
 test_engine = create_engine(SQLALCHEMY_TestDB_URL)
 
@@ -52,10 +52,21 @@ def client(session):
 
 
 @pytest.fixture
+def test_user2(client):
+    user_data = {"name": "Hareem", "email": "hareem@example.com", "password": "123"}
+    res = client.post("/create_user", json=user_data)
+    # print(res.json())
+    assert res.status_code == status.HTTP_201_CREATED
+    new_user = res.json()
+    new_user["password"] = user_data["password"]
+    return new_user
+
+
+@pytest.fixture
 def test_user(client):
     user_data = {"name": "Haider", "email": "haider@example.com", "password": "123"}
     res = client.post("/create_user", json=user_data)
-    print(res.json())
+    # print(res.json())
     assert res.status_code == status.HTTP_201_CREATED
     new_user = res.json()
     new_user["password"] = user_data["password"]
@@ -92,17 +103,25 @@ def test_notes(test_user, session):
             "title": "Life",
             "description": "Life is unpredictable",
             "owner_id": test_user["id"]
+            # "owner_id": "2"
         },
         {
             "title": "Understanding",
             "description": "Understanding is the core of learning",
             "owner_id": test_user["id"]
+            # "owner_id": "2"
         },
         {
             "title": "Comparison",
             "description": "Comparison is the thief of Happiness",
             "owner_id": test_user["id"]
+            # "owner_id": "2"
         },
+        # {
+        #     "title": "Vision",
+        #     "description": "Vision is more than half intelligence",
+        #     "owner_id": test_user2["id"]
+        # },
     ]
 
     def create_note_model(note):
