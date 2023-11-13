@@ -74,7 +74,9 @@ jobs:
           echo "name=response">>$GITHUB_STATE
 
       - name: Print GET response
-        run: echo "Response from Get request $name"
+        run: echo "Response from Get request is $name"
+        env:
+          name: ${{ env.name }}
 #  push:
 #    branches:
 #      - "dev"
