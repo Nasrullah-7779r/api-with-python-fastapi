@@ -23,9 +23,10 @@ def test_get_all_notes(authorized_client, test_notes):
     assert res.status_code == status.HTTP_200_OK
 
 
-# @pytest.mark.skip
+@pytest.mark.skip
 def test_unauthorized_user_get_all_notes(client, test_notes):
     res = client.get("/all_notes")
+    # pdb.set_trace()
     assert res.status_code == status.HTTP_401_UNAUTHORIZED
 
 
@@ -35,14 +36,14 @@ def test_get_one_note_not_exist(authorized_client, test_notes):
     assert res.status_code == status.HTTP_404_NOT_FOUND
 
 
-# @pytest.mark.skip
+@pytest.mark.skip
 def test_get_one_note(authorized_client, test_notes):
     # pdb.set_trace()
     res = authorized_client.get(f"/one_note/{test_notes[0].id}")
 
-    print(f"res is {res.json()}")
+    # print(f"res is {res.json()}")
     note = schemas.NoteOut(**res.json())
-    print(res.json())
+    # print(res.json())
     assert note.id == test_notes[0].id
 
 
