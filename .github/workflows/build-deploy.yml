@@ -72,7 +72,8 @@ jobs:
         run: | 
           response=$(curl -s http://127.0.0.1:8000/)
           echo "name=response">>$GITHUB_ENV
-
+      - name: Install jq
+        run: sudo apt-get install -y jq
       - name: Print GET response
         run: echo "Response from Get request is $(echo $name | jq .)"
         env:
