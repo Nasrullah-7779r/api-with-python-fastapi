@@ -12,7 +12,7 @@ user_data_list = [
 ]
 
 
-@pytest.mark.skip
+# @pytest.mark.skip
 @pytest.mark.parametrize("user_data", user_data_list)
 def test_create_user(client, user_data):
     response = client.post('/create_user', json=user_data)
