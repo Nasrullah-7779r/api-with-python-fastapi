@@ -42,7 +42,7 @@ def test_login(client, test_user):
     res = client.post("/login", data={"username": test_user["email"], "password": test_user["password"]})
     login_res = schemas.Token(**res.json())
     payload = jwt.decode(login_res.access_token, setting.secret_key, setting.algorithm)
-    pdb.set_trace()
+    # pdb.set_trace()
     uid = payload.get("id")
     assert uid == test_user["id"]
     assert login_res.token_type == "bearer"
