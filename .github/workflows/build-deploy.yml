@@ -29,10 +29,11 @@ jobs:
       ACCESS_TOKEN_EXPIRE_MINUTES: ${{secrets.ACCESS_TOKEN_EXPIRE_MINUTES}}
 
     steps:
-      - name: print env
-        uses: echo "db host name is ${{secrets.DATABASE_HOSTNAME}}"
+
       - name: pulling git repo
         uses: actions/checkout@v4
+      - name: print env
+        uses: echo "db host name is ${{secrets.DATABASE_HOSTNAME}}"
       - name: print something on console
         run:  echo "Hello linux 3rd"
       - name: install python
