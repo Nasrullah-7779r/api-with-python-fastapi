@@ -37,10 +37,10 @@ jobs:
 
       - name: pulling git repo
         uses: actions/checkout@v4
-      - name: print env
-        run: echo "db host name is ${{secrets.DATABASE_HOST_NAME}}"
-      - name: print something on console
-        run:  echo "Hello linux 3rd"
+#      - name: print env
+#        run: echo "db host name is ${{secrets.DATABASE_HOST_NAME}}"
+#      - name: print something on console
+#        run:  echo "Hello linux 3rd"
       - name: install python
         uses: actions/setup-python@v4
         with:
@@ -59,13 +59,22 @@ jobs:
       - name: Run the app
         run:  uvicorn app2.main:app &
 
+#      - name: Capture response
+#        id: app_get_response
+#        run: response=$(curl -s http://127.0.0.1:8000/)
+#          echo "::set-output name=response::$response"
+
+#      - name: Print GET response
+#        run: echo "Response from Get request:${{steps.app_get_response.outputs.response}}"
+
       - name: Capture response
         id: app_get_response
-        run: response=$(curl -s http://127.0.0.1:8000/)
-          echo "::set-output name=response::$response"
+        run: | 
+          response=$(curl -s http://127.0.0.1:8000/)
+          echo "name=response">>$GITHUB_STATE
 
       - name: Print GET response
-        run: echo "Response from Get request:${{steps.app_get_response.outputs.response}}"
+        run: echo "Response from Get request $name"
 #  push:
 #    branches:
 #      - "dev"
