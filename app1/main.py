@@ -4,7 +4,7 @@ from Model.note_schema import Note
 
 app = FastAPI()
 
-client = MongoClient("mongodb+srv://Nasrullah:pass1234@mycluster.9g8gat6.mongodb.net/")
+client = MongoClient("CONNECTION_STRING")
 
 db = client["testDB"]
 
